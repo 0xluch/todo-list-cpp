@@ -22,6 +22,26 @@ void from_json(const json& j, Task& task){
     j.at("status").get_to(task.status);
 }
 
+void display(){
+    json listJ = json::array();
+    ifstream file("TaskList.json");
+    if (file.is_open()){
+        file >> listJ;
+        file.close();
+        auto tasks = listJ.get<vector<Task>>();
+        if(tasks.empty())
+            cout << "Empty" << endl;
+        else{
+            for(const auto& t : tasks){
+                cout << "id: " << t.id
+                     << "\ntitle: " << t.title
+                     << "\nstatus: " << t.status << endl;
+            }
+        }
+    }else
+        cout << "display error" << endl;
+}
+
 void addTask(Task t){
     cout << "id: ";
     cin >> t.id;
@@ -31,12 +51,12 @@ void addTask(Task t){
     cin >> t.status;
     json j;
     to_json (j, t);
-    //////////////////////
     json listJ = json::array();
     ifstream file("TaskList.json");
     if(file.is_open()){
         file >> listJ;
         cout << "loading" << endl;
+        file.close();
     }else
         cout << "error...1" << endl;
 
@@ -54,14 +74,19 @@ void addTask(Task t){
 int main(){
     cout << "Welcome to you r to-do list!" << endl;
     cout << "choose opr:" << endl;
-    cout << "1. add" << endl;
+    cout << "1. list" << endl;
+    cout << "2. add" << endl;
     int opr;
     while(cin >> opr){
         if(opr == 1){
+            display();
+        }else if(opr == 2){
             Task t;
             addTask(t);
-        }
+        }else
+            break;
         cout << "choose opr:" << endl;
-        cout << "1. add" << endl;
+        cout << "1. list" << endl;
+        cout << "2. add" << endl;
     }
 }
