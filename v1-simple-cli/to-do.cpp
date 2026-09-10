@@ -67,6 +67,12 @@ string status(){
     cout << "| 2. In-progress: " << endl;
     cout << "| >> ";
     cin >> opt;
+    if(cin.fail()){
+        cin.clear(); 
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "| unvalid option, try again." << endl;
+        return status();
+    }
     if(opt == 1)
         return "Completed";
     if(opt == 2)
@@ -77,7 +83,8 @@ string status(){
     }
 }
 
-void addTask(Task t){
+void addTask(){
+    Task t;
     cout << "| title: ";
     cin.ignore();
     getline(cin, t.title);
@@ -153,8 +160,7 @@ int main(){
             cout << endl;
             displayTask();
         }else if(opr == 2){
-            Task t;
-            addTask(t);
+            addTask();
         }else if(opr == 3){
             int id;
             cout << "| task id to be updated: ";
