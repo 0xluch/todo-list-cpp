@@ -1,31 +1,11 @@
 [
     {
         "id": 1,
-        "status": "ooool",
-        "title": "looo"
+        "status": "inprocess",
+        "title": "Task 1"
     },
     {
-        "id": 5,
-        "status": "eeeeffc",
-        "title": "d;;;;;;s"
-    },
-    {
-        "id": 3,
-        "status": "hhhhhhhhhh",
-        "title": "aaaaaaaaaaa"
-    },
-    {
-        "id": 7,
-        "status": "vmvmv",
-        "title": "lsslls"
-    },
-    {
-        "id": 4,
-        "status": "ssssssssss",
-        "title": "wwwwwww"
-    },
-    {
-        "id": 0,
+        "id": 1,
         "status": "",
         "title": ""
     }
