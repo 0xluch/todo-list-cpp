@@ -1,7 +1,7 @@
-#include"task.h"
-#include "storage.h"
-#include "taskops.h"
-#include "ui.h"
+#include"src/task.h"
+#include "src/storage.h"
+#include "src/taskops.h"
+#include "src/ui.h"
 #include <iostream>
 
 int main(){

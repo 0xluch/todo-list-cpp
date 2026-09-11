@@ -40,5 +40,5 @@ todo-cpp/
 ## How to Compile & Run
 
 ```bash
-g++ -std=c++17 *.cpp -o todo
+g++ -std=c++17 main.cpp src/*.cpp -o todo
 ./todo
