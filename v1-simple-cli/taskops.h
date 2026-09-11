@@ -1,6 +1,7 @@
 #pragma once
 #include "task.h"
 #include "storage.h"
+#include "ui.h"
 
 void addTask();
 void update(int& id, char opr);
