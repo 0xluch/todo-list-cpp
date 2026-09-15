@@ -16,12 +16,12 @@ void addTask(){
             folder TEXT NOT NULL
             )
         )");
-    std::string title, status;
+    std::string title;
     std::cout << "| title: ";
     std::cin.ignore();
     getline(std::cin, title);
     std::cout << "| status: ";
-    getline(std::cin, status);
+    std::string thisStatus = status();
     std::string folder;
     while(true){
         std::cout << "| Wanna choose a specific folder? (Y/N) ";
@@ -40,7 +40,7 @@ void addTask(){
     }
     SQLite::Statement query(db, "INSERT INTO tasks (title, status, folder) VALUES (?, ?, ?)");
     query.bind(1, title);
-    query.bind(2, status);
+    query.bind(2, thisStatus);
     query.bind(3, folder);
     query.exec();
 }
@@ -63,23 +63,31 @@ void update(int& id, char opr){
             if (opr == 's'){
                 std::cout << "| New status: " << std::endl;
                 std::string newStatus = status();
-                SQLite::Statement query(db, "UPDATED tasks SET status = ? WHERE id = ?;");
+                SQLite::Statement query(db, "UPDATE tasks SET status = ? WHERE id = ?;");
                 query.bind(1, newStatus);
                 query.bind(2, id);
                 query.exec();
+                std
+                std::cout << "| update completed :3" << endl;
+            }else{
+                std::cout << "| New Title: ";
+                std::cin.ignore();
+                std::string newTitle;
+                std::getline(std::cin, newTitle);
+                SQLite::Statement query(db, "UPDATE tasks SET title = ? WHERE id = ?;");
+                query.bind(1, newTitle);
+                query.bind(2, id);
+                query.exec();
+                std
+                std::cout << "| update completed :3" << endl;
             }
-            // else{
-            //     std::cout << "| New Title: ";
-            //     std::cin.ignore();
-            //     std::string newTitle;
-            //     std::getline(std::cin, newTitle);
-            //     target["title"] = newTitle;
-            // }
             break;
         }
     }
-    if(!found)
-        std::cout << "id not found, check list" << std::endl;
+    if(!found){
+        std::cout << "id not found, check tasks list" << std::endl;
+        displayTask();
+    }
 }
 
 void updateTitle(int& id){
@@ -91,7 +99,16 @@ void updateStatus(int& id){
 }
 
 void deleteTask(int& id){
-    json j = loadTasks();
+    SQLite::Database db("tasktracker.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+    db.exec(R"(
+        CREATE TABLE IF NOT EXISTS tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            title TEXT NOT NULL, 
+            status TEXT NOT NULL,
+            folder TEXT NOT NULL
+            )
+        )");
+
     bool found = false;
     for (auto it = j.begin(); it != j.end(); ){
         if(it->contains("id") && (*it)["id"].get<int>() == id){

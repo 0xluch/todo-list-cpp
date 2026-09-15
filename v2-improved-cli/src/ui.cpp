@@ -27,13 +27,14 @@ void displayTask(){
         while(query.executeStep()){
             std::string list = query.getColumn(3).getString();
             std::cout << "| #" << list << ": " << std::endl;
+            SQLite::Statement query(db, "SELECT * FROM tasks");
             while(query.executeStep()){
                 if(list == query.getColumn(3).getString()){
                     int id = query.getColumn(0).getInt();
                     std::cout << "| Task " << id << ":" << std::endl;
                     std::string title = query.getColumn(1).getString();
                     std::string status = query.getColumn(2).getString();
-                    std::cout << "| Title : " << title
+                    std::cout << "|  Title : " << title
                                 << "   ---    " 
                                 << "Status: " << status << std::endl;
                     std::cout << "─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;

@@ -13,7 +13,8 @@ int main(){
     std::cout << "+-Welcome to your to-do list!─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─(((─ ─(((─ ─ ─ ─ ─ ─ ─+\n|" << std::endl;
     showMenu();
     int opr;
-    while(std::cin >> opr){
+    while(true){
+        std::cin >> opr;
         if(opr == 1){
             displayTask();
         }else if(opr == 2){
@@ -40,10 +41,12 @@ int main(){
             std::cin >> id;
             deleteTask(id);
         }else if(opr == 7){
-           // updateFolderName();
+        //    createFolder();
         }else if(opr == 8){
-          //  deleteFolder();
-        }
+        //    updateFolderName();
+        }else if(opr == 9){
+        //    deleteFolder();
+        }else
             break;
         showMenu();
     }
