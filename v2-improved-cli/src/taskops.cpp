@@ -67,8 +67,9 @@ void update(int& id, char opr){
                 query.bind(1, newStatus);
                 query.bind(2, id);
                 query.exec();
-                std
-                std::cout << "| update completed :3" << endl;
+                std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
+                std::cout << "| update completed :3" << std::endl;
+                std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
             }else{
                 std::cout << "| New Title: ";
                 std::cin.ignore();
@@ -78,8 +79,9 @@ void update(int& id, char opr){
                 query.bind(1, newTitle);
                 query.bind(2, id);
                 query.exec();
-                std
-                std::cout << "| update completed :3" << endl;
+                std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
+                std::cout << "| update completed :3" << std::endl;
+                std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
             }
             break;
         }
@@ -108,17 +110,18 @@ void deleteTask(int& id){
             folder TEXT NOT NULL
             )
         )");
-
+    SQLite::Statement query(db, "SELECT id FROM tasks;");
     bool found = false;
-    for (auto it = j.begin(); it != j.end(); ){
-        if(it->contains("id") && (*it)["id"].get<int>() == id){
+    while (query.executeStep()){
+        if(query.getColumn(0).getInt() == id){
             found = true;
-            std::cout << "| task found... ";
-            it = j.erase(it);
-            saveTasks(j);
+            std::cout << "| task found... " << std::endl;;
+            SQLite::Statement query(db, "DELETE FROM tasks WHERE id = ?;");
+            query.bind(1, id);
+            query.exec();
+            std::cout << "| task deleted :3" << std::endl;
             break;
-        }else
-            ++it;
+        }
     }
     if(!found)
         std::cout << "id not found, check list" << std::endl;

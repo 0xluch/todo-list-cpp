@@ -31,13 +31,13 @@ void displayTask(){
             while(query.executeStep()){
                 if(list == query.getColumn(3).getString()){
                     int id = query.getColumn(0).getInt();
-                    std::cout << "| Task " << id << ":" << std::endl;
+                    std::cout << "| Task id = " << id << ":" << std::endl;
                     std::string title = query.getColumn(1).getString();
                     std::string status = query.getColumn(2).getString();
                     std::cout << "|  Title : " << title
                                 << "   ---    " 
                                 << "Status: " << status << std::endl;
-                    std::cout << "─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
+                    std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
                 }
             }
         }
