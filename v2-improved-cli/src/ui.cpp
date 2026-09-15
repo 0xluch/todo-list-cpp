@@ -4,9 +4,19 @@
 #include <vector>
 #include <limits>
 #include <iostream>
+#include <SQLiteCpp/SQLiteCpp.h> 
+
 
 void displayTask(){
-    openDB();
+    SQLite::Database db("tasktracker.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+    db.exec(R"(
+        CREATE TABLE IF NOT EXISTS tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            title TEXT NOT NULL, 
+            status TEXT NOT NULL,
+            folder TEXT NOT NULL
+            )
+        )");
     SQLite::Statement query(db, "SELECT COUNT(*) FROM tasks");
     query.executeStep();
     int count = query.getColumn(0).getInt();
@@ -35,7 +45,15 @@ void displayTask(){
 
 void displayFolder(){
     try{
-        openDB();
+        SQLite::Database db("tasktracker.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+    db.exec(R"(
+        CREATE TABLE IF NOT EXISTS tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            title TEXT NOT NULL, 
+            status TEXT NOT NULL,
+            folder TEXT NOT NULL
+            )
+        )");
         SQLite::Statement query(db, "SELECT folder FROM tasks;");
         int i = 0;
         while(query.executeStep()){

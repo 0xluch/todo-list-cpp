@@ -4,7 +4,7 @@
 #include "src/ui.h"
 #include "src/opendb.h"
 #include <iostream>
-
+#include <SQLiteCpp/SQLiteCpp.h> 
 
 
 int main(){
@@ -15,7 +15,6 @@ int main(){
     int opr;
     while(std::cin >> opr){
         if(opr == 1){
-            std::cout << std::endl;
             displayTask();
         }else if(opr == 2){
             displayFolder();
@@ -41,9 +40,9 @@ int main(){
             std::cin >> id;
             deleteTask(id);
         }else if(opr == 7){
-            updateFolderName();
+           // updateFolderName();
         }else if(opr == 8){
-            deleteFolder();
+          //  deleteFolder();
         }
             break;
         showMenu();
