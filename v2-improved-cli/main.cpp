@@ -2,8 +2,8 @@
 #include "src/storage.h"
 #include "src/taskops.h"
 #include "src/ui.h"
+#include "src/opendb.h"
 #include <iostream>
-#include <SQLiteCpp/SQLiteCpp.h> 
 
 
 
@@ -18,29 +18,33 @@ int main(){
             std::cout << std::endl;
             displayTask();
         }else if(opr == 2){
+            displayFolder();
+        }else if(opr == 3){
             try {
                 addTask();
             } catch (const SQLite::Exception& e) {
                 std::cerr << e.what() << std::endl;
             }
-        }else if(opr == 3){
+        }else if(opr == 4){
             int id;
             std::cout << "| task id to be updated: ";
             std::cin >> id;
             updateStatus(id);
-        }else if(opr == 4){
+        }else if(opr == 5){
             int id;
             std::cout << "| task id to be updated: ";
            std::cin >> id;
             updateTitle(id);
-        }else if(opr == 5){
+        }else if(opr == 6){
             int id;
             std::cout << "| task id to be deleted: ";
             std::cin >> id;
             deleteTask(id);
-        }else if(opr == 9){
-            
-        }else
+        }else if(opr == 7){
+            updateFolderName();
+        }else if(opr == 8){
+            deleteFolder();
+        }
             break;
         showMenu();
     }

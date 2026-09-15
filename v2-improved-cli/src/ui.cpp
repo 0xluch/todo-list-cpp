@@ -1,12 +1,12 @@
 #include "ui.h"
 #include "storage.h"
+#include "opendb.h"
 #include <vector>
 #include <limits>
 #include <iostream>
-#include <SQLiteCpp/SQLiteCpp.h> 
 
 void displayTask(){
-    SQLite::Database db("tasks.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+    openDB();
     SQLite::Statement query(db, "SELECT COUNT(*) FROM tasks");
     query.executeStep();
     int count = query.getColumn(0).getInt();
@@ -15,15 +15,38 @@ void displayTask(){
     else{
         SQLite::Statement query(db, "SELECT * FROM tasks");
         while(query.executeStep()){
-            int id = query.getColumn(0).getInt();
-            std::cout << "| Task " << id << ":" << std::endl;
-            std::string title = query.getColumn(1).getString();
-            std::string status = query.getColumn(2).getString();
-            std::cout << "| Title : " << title
-                      << "   ---    " 
-                      << "Status: " << status << std::endl;
-            std::cout << "─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
+            std::string list = query.getColumn(3).getString();
+            std::cout << "| #" << list << ": " << std::endl;
+            while(query.executeStep()){
+                if(list == query.getColumn(3).getString()){
+                    int id = query.getColumn(0).getInt();
+                    std::cout << "| Task " << id << ":" << std::endl;
+                    std::string title = query.getColumn(1).getString();
+                    std::string status = query.getColumn(2).getString();
+                    std::cout << "| Title : " << title
+                                << "   ---    " 
+                                << "Status: " << status << std::endl;
+                    std::cout << "─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
+                }
+            }
         }
+    }
+}
+
+void displayFolder(){
+    try{
+        openDB();
+        SQLite::Statement query(db, "SELECT folder FROM tasks;");
+        int i = 0;
+        while(query.executeStep()){
+            i++;
+            std::string folder = query.getColumn(0).getText();
+            std::cout << "| Folder " << i << ": " << folder << std::endl;
+        }
+        if (i == 0)
+            std::cout << "You have no folder yet" << std::endl;
+    }catch (const SQLite::Exception& e){
+        std::cerr << e.what() << std::endl; 
     }
 }
 
@@ -55,11 +78,14 @@ std::string status(){
 
 void showMenu(){
     std::cout << "| choose opr number:" << std::endl;
-    std::cout << "|   1. list tasks" << std::endl;
-    std::cout << "|   2. add task" << std::endl;
-    std::cout << "|   3. update status" << std::endl;
-    std::cout << "|   4. update title" << std::endl;
-    std::cout << "|   5. delete task" << std::endl;
+    std::cout << "|   1. list all tasks" << std::endl;
+    std::cout << "|   2. list folders" << std::endl;
+    std::cout << "|   3. add task" << std::endl;
+    std::cout << "|   4. update status" << std::endl;
+    std::cout << "|   5. update title" << std::endl;
+    std::cout << "|   6. delete task" << std::endl;
+    std::cout << "|   7. update folder name" << std::endl;
+    std::cout << "|   8. delete folder" << std::endl;
     std::cout << "|   0. exit" << std::endl;
     std::cout << "|   >> ";
 }

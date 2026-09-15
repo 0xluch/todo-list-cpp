@@ -1,37 +1,47 @@
 #include "taskops.h"
+#include "opendb.h"
 #include <iostream>
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <SQLiteCpp/SQLiteCpp.h> 
 
 void addTask(){
-    SQLite::Database db("tasks.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-    db.exec(R"(
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            title TEXT NOT NULL, 
-            status TEXT NOT NULL
-            )
-        )"
-        );
+    openDB();
     std::string title, status;
     std::cout << "| title: ";
     std::cin.ignore();
     getline(std::cin, title);
     std::cout << "| status: ";
     getline(std::cin, status);
-    SQLite::Statement query(db, "INSERT INTO tasks (title, status) VALUES (?, ?)");
+    while(true){
+        std::cout << "| Wanna choose a specific folder? (Y/N) ";
+        char f;
+        std::cin >> f;
+        std::string folder;
+        if (f == 'N'){
+            folder = "default";
+            break;
+        }else if (f == 'Y'){
+            displayFolder();
+            std::cout << "Please choose folder: " << std::endl;
+            cin.ignore();
+            getline(cin, folder);
+        }else
+            std::cout << "| Invalid option, try again." << std::endl;
+    }
+    SQLite::Statement query(db, "INSERT INTO tasks (title, status, folder) VALUES (?, ?, ?)");
     query.bind(1, title);
     query.bind(2, status);
+    query.bind(3, folder);
     query.exec();
 }
 
 void update(int& id, char opr){
-    json j = loadTasks();
+    openDB();
+    SQLite::Statement query(db, "SELECT id FROM tasks;");
     bool found = false;
-    for (auto& target : j){
-        if(target.contains("id") && target["id"].get<int>() == id){
+    while (query.executeStep()){
+        if(query.getColumn(0).getInt() == id){
             found = true;
             if (opr == 's'){
                 std::cout << "| New status: " << std::endl;
