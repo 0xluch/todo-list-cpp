@@ -1,13 +1,15 @@
 #include"src/task.h"
-#include "src/storage.h"
 #include "src/taskops.h"
 #include "src/ui.h"
 #include "src/opendb.h"
+#include "src/folderops.h"
 #include <iostream>
-#include <SQLiteCpp/SQLiteCpp.h> 
 
 
 int main(){
+    openDB();
+    openFDB();
+
     std::cout << "                                                  " << R"(    |\__/,|   (`\ )" << "\n" 
     << "                                                    _.|o o  |_   ) )" << std::endl;
     std::cout << "+-Welcome to your to-do list!─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─(((─ ─(((─ ─ ─ ─ ─ ─ ─+\n|" << std::endl;
@@ -41,9 +43,9 @@ int main(){
             std::cin >> id;
             deleteTask(id);
         }else if(opr == 7){
-        //    createFolder();
+           createFolder();
         }else if(opr == 8){
-        //    updateFolderName();
+           updateFolderName();
         }else if(opr == 9){
         //    deleteFolder();
         }else

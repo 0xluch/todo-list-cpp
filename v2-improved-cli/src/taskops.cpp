@@ -7,20 +7,12 @@
 #include <SQLiteCpp/SQLiteCpp.h> 
 
 void addTask(){
-    SQLite::Database db("tasktracker.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-    db.exec(R"(
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            title TEXT NOT NULL, 
-            status TEXT NOT NULL,
-            folder TEXT NOT NULL
-            )
-        )");
+    auto& db = getDB();
     std::string title;
     std::cout << "| title: ";
     std::cin.ignore();
     getline(std::cin, title);
-    std::cout << "| status: ";
+    std::cout << "| status: " << std::endl;;
     std::string thisStatus = status();
     std::string folder;
     while(true){
@@ -32,13 +24,22 @@ void addTask(){
             break;
         }else if (f == 'Y'){
             displayFolder();
-            std::cout << "Please choose folder: " << std::endl;
-            std::cin.ignore();
-            getline(std::cin, folder);
+            std::cout << "| Please choose folder: ";
+            int idF;
+            std::cin >> idF;
+            SQLite::Statement queryf(db, "SELECT * FROM folders WHERE id = ?;");
+            queryf.bind(1, idF);
+            if (queryf.executeStep()){
+                folder = queryf.getColumn(1).getString();
+                break;
+            }else
+                std::cout << "| Folder not found." << std::endl;
         }else
             std::cout << "| Invalid option, try again." << std::endl;
+        
     }
     SQLite::Statement query(db, "INSERT INTO tasks (title, status, folder) VALUES (?, ?, ?)");
+    
     query.bind(1, title);
     query.bind(2, thisStatus);
     query.bind(3, folder);
@@ -46,15 +47,7 @@ void addTask(){
 }
 
 void update(int& id, char opr){
-    SQLite::Database db("tasktracker.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-    db.exec(R"(
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            title TEXT NOT NULL, 
-            status TEXT NOT NULL,
-            folder TEXT NOT NULL
-            )
-        )");
+    auto& db = getDB();
     SQLite::Statement query(db, "SELECT id FROM tasks;");
     bool found = false;
     while (query.executeStep()){
@@ -101,15 +94,7 @@ void updateStatus(int& id){
 }
 
 void deleteTask(int& id){
-    SQLite::Database db("tasktracker.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-    db.exec(R"(
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            title TEXT NOT NULL, 
-            status TEXT NOT NULL,
-            folder TEXT NOT NULL
-            )
-        )");
+    auto& db = getDB();
     SQLite::Statement query(db, "SELECT id FROM tasks;");
     bool found = false;
     while (query.executeStep()){

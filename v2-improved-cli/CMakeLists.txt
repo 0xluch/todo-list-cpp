@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
     main.cpp
-    src/task.cpp
-    src/storage.cpp
+    src/folderops.cpp
+    src/opendb.cpp
     src/taskops.cpp
     src/ui.cpp
 )

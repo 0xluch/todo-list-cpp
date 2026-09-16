@@ -3,3 +3,4 @@
 
 SQLite::Database& getDB();
 void openDB();
+void openFDB();

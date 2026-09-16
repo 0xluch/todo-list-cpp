@@ -1,5 +1,4 @@
 #include "ui.h"
-#include "storage.h"
 #include "opendb.h"
 #include <vector>
 #include <limits>
@@ -8,59 +7,45 @@
 
 
 void displayTask(){
-    SQLite::Database db("tasktracker.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-    db.exec(R"(
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            title TEXT NOT NULL, 
-            status TEXT NOT NULL,
-            folder TEXT NOT NULL
-            )
-        )");
+    auto& db = getDB();
     SQLite::Statement query(db, "SELECT COUNT(*) FROM tasks");
     query.executeStep();
     int count = query.getColumn(0).getInt();
     if (count == 0)
         std::cout << "| You have no tasks registered -_-" << std::endl;
     else{
-        SQLite::Statement query(db, "SELECT * FROM tasks");
-        while(query.executeStep()){
-            std::string list = query.getColumn(3).getString();
-            std::cout << "| #" << list << ": " << std::endl;
-            SQLite::Statement query(db, "SELECT * FROM tasks");
+        SQLite::Statement queryf(db, "SELECT DISTINCT folder FROM tasks");
+        while(queryf.executeStep()){
+            std::string folder = queryf.getColumn(0).getString();
+            std::vector<std::string> folders;
+            folders.push_back(folder); 
+            std::cout << "| #" << folder << ": " << std::endl;
+            SQLite::Statement query(db, "SELECT * FROM tasks WHERE folder = ?;");
+            query.bind(1, folder);
             while(query.executeStep()){
-                if(list == query.getColumn(3).getString()){
-                    int id = query.getColumn(0).getInt();
-                    std::cout << "| Task id = " << id << ":" << std::endl;
-                    std::string title = query.getColumn(1).getString();
-                    std::string status = query.getColumn(2).getString();
-                    std::cout << "|  Title : " << title
-                                << "   ---    " 
-                                << "Status: " << status << std::endl;
-                    std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
-                }
+                int id = query.getColumn(0).getInt();
+                std::cout << "| Task id = " << id << ":" << std::endl;
+                std::string title = query.getColumn(1).getString();
+                std::string status = query.getColumn(2).getString();
+                std::cout << "|  Title : " << title
+                          << "   ---    " 
+                          << "Status: " << status << std::endl;
+                std::cout << "|" << std::endl;
             }
+            std::cout << "|─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
         }
     }
 }
 
 void displayFolder(){
     try{
-        SQLite::Database db("tasktracker.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-    db.exec(R"(
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            title TEXT NOT NULL, 
-            status TEXT NOT NULL,
-            folder TEXT NOT NULL
-            )
-        )");
-        SQLite::Statement query(db, "SELECT folder FROM tasks;");
+        auto& db = getDB();
+        SQLite::Statement query(db, "SELECT * FROM folders;");
         int i = 0;
         while(query.executeStep()){
             i++;
-            std::string folder = query.getColumn(0).getText();
-            std::cout << "| Folder " << i << ": " << folder << std::endl;
+            std::string folder = query.getColumn(1).getText();
+            std::cout << "| Folder id = " << query.getColumn(0).getInt() << ": " << folder << std::endl;
         }
         if (i == 0)
             std::cout << "You have no folder yet" << std::endl;
@@ -96,15 +81,20 @@ std::string status(){
 }
 
 void showMenu(){
-    std::cout << "| choose opr number:" << std::endl;
+    std::cout << "|─choose opr number:" << std::endl;
+    std::cout << "|─display options:─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
     std::cout << "|   1. list all tasks" << std::endl;
     std::cout << "|   2. list folders" << std::endl;
+    std::cout << "|─tasks ops:─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
     std::cout << "|   3. add task" << std::endl;
-    std::cout << "|   4. update status" << std::endl;
-    std::cout << "|   5. update title" << std::endl;
+    std::cout << "|   4. update task status" << std::endl;
+    std::cout << "|   5. update task title" << std::endl;
     std::cout << "|   6. delete task" << std::endl;
-    std::cout << "|   7. update folder name" << std::endl;
-    std::cout << "|   8. delete folder" << std::endl;
+    std::cout << "|─folders ops:─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
+    std::cout << "|   7. create folder" << std::endl;
+    std::cout << "|   8. update folder name" << std::endl;
+    std::cout << "|   9. delete folder" << std::endl;
+    std::cout << "|─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
     std::cout << "|   0. exit" << std::endl;
     std::cout << "|   >> ";
 }

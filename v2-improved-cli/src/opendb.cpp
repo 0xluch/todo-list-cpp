@@ -1,7 +1,7 @@
 #include "opendb.h"
 
 SQLite::Database& getDB(){
-    SQLite::Database db("tasktracker.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+    static SQLite::Database db("tasktracker.db", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
     return db;
 }
 
@@ -16,4 +16,16 @@ void openDB(){
             )
         )");
 }
-    
+
+void openFDB(){
+    auto& db = getDB();
+    db.exec(R"(
+        CREATE TABLE IF NOT EXISTS folders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            folder TEXT UNIQUE
+            )
+        )");
+    SQLite::Statement query(db, "INSERT OR IGNORE INTO folders (folder) VALUES (?);");
+    query.bind(1, "default");
+    query.exec(); 
+}
