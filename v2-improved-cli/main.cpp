@@ -47,7 +47,7 @@ int main(){
         }else if(opr == 8){
            updateFolderName();
         }else if(opr == 9){
-        //    deleteFolder();
+           deleteFolder();
         }else
             break;
         showMenu();

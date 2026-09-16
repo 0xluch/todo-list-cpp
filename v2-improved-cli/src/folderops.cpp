@@ -18,9 +18,9 @@ void createFolder(){
 
 void updateFolderName(){
     auto& db = getDB();
-    displayFolder();
-    std::cout << "| Choose the folder to update their name: ";
     while(true){
+        displayFolder();
+        std::cout << "| Choose the folder to update their name: ";
         int idF;
         std::cin >> idF;
         SQLite::Statement folderN(db, "SELECT folder FROM folders WHERE id = ?;");
@@ -41,8 +41,38 @@ void updateFolderName(){
             queryf.exec();
             break;
         }else{
-            std::cout << "No folder with that id is found..." << std::endl;
-            std::cout << "Retry(R)/exit(q)" << std::endl;
+            std::cout << "| No folder with that id is found..." << std::endl;
+            std::cout << "| Retry(R)/exit(q)" << std::endl;
+            char opt;
+            std::cin >> opt;
+            if(!(opt == 'r' || opt == 'R')) break;
+        }
+        
+    }
+}
+
+void deleteFolder(){
+    auto& db = getDB();
+    while(true){
+        displayFolder();
+        std::cout << "| Choose the folder to delete (ps: all tasks there will be deleted too): ";
+        int idF;
+        std::cin >> idF;
+        SQLite::Statement folderN(db, "SELECT folder FROM folders WHERE id = ?;");
+        folderN.bind(1, idF);
+        if(folderN.executeStep()){
+            std::string orgF = folderN.getColumn(0).getString();
+            SQLite::Statement queryt(db, "DELETE FROM tasks WHERE folder = ?;");
+            queryt.bind(1, orgF);
+            queryt.exec();
+            SQLite::Statement queryf(db, "DELETE FROM folders WHERE id = ?;");
+            queryf.bind(1, idF);
+            queryf.exec();
+            break;
+        }else{
+            std::cout << "| No folder with that id is found..." << std::endl;
+            std::cout << "| Retry(R)/exit(q)" << std::endl;
+            std::cout << "| >> ";
             char opt;
             std::cin >> opt;
             if(!(opt == 'r' || opt == 'R')) break;
