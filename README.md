@@ -56,6 +56,7 @@ V2 also introduces a relational database structure where tasks reference folders
 
 ## 🆚 V1 vs V2
 
+```text
 │                      │ V1    │ V2       │
 │ -------------------- │ ----- │ -------- │
 │ Language             │ C++   │ C++      │
@@ -63,7 +64,7 @@ V2 also introduces a relational database structure where tasks reference folders
 │ Storage              │ JSON  │ SQLite   │
 │ Input validation     │ Basic │ Improved │
 │ Modular source files │ ✅     │ ✅        │
-
+```
 ---
 
 ## 🛠️ Technologies
