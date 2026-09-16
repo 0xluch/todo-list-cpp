@@ -12,25 +12,25 @@ void addTask(){
     std::cout << "| title: ";
     std::cin.ignore();
     getline(std::cin, title);
-    std::cout << "| status: " << std::endl;;
+    std::cout << "| status: " << std::endl;
     std::string thisStatus = status();
-    std::string folder;
+    int folderID;
     while(true){
         std::cout << "| Wanna choose a specific folder? (Y/N) ";
         char f;
         std::cin >> f;
         if (f == 'N'){
-            folder = "default";
+            folderID = 1;
             break;
         }else if (f == 'Y'){
             displayFolder();
             std::cout << "| Please choose folder: ";
             int idF;
             std::cin >> idF;
-            SQLite::Statement queryf(db, "SELECT * FROM folders WHERE id = ?;");
+            SQLite::Statement queryf(db, "SELECT id FROM folders WHERE id = ?;");
             queryf.bind(1, idF);
             if (queryf.executeStep()){
-                folder = queryf.getColumn(1).getString();
+                folderID = idF;
                 break;
             }else
                 std::cout << "| Folder not found." << std::endl;
@@ -38,76 +38,89 @@ void addTask(){
             std::cout << "| Invalid option, try again." << std::endl;
         
     }
-    SQLite::Statement query(db, "INSERT INTO tasks (title, status, folder) VALUES (?, ?, ?)");
+    SQLite::Statement query(db, "INSERT INTO tasks (title, status, folder_id) VALUES (?, ?, ?)");
     
     query.bind(1, title);
     query.bind(2, thisStatus);
-    query.bind(3, folder);
+    query.bind(3, folderID);
     query.exec();
 }
 
-void update(int& id, char opr){
+void updateTitle(int id){
     auto& db = getDB();
-    SQLite::Statement query(db, "SELECT id FROM tasks;");
-    bool found = false;
-    while (query.executeStep()){
-        if(query.getColumn(0).getInt() == id){
-            found = true;
-            if (opr == 's'){
-                std::cout << "| New status: " << std::endl;
-                std::string newStatus = status();
-                SQLite::Statement query(db, "UPDATE tasks SET status = ? WHERE id = ?;");
-                query.bind(1, newStatus);
-                query.bind(2, id);
-                query.exec();
-                std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
-                std::cout << "| update completed :3" << std::endl;
-                std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
-            }else{
-                std::cout << "| New Title: ";
-                std::cin.ignore();
-                std::string newTitle;
-                std::getline(std::cin, newTitle);
-                SQLite::Statement query(db, "UPDATE tasks SET title = ? WHERE id = ?;");
-                query.bind(1, newTitle);
-                query.bind(2, id);
-                query.exec();
-                std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
-                std::cout << "| update completed :3" << std::endl;
-                std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
-            }
+    while(true){
+        SQLite::Statement selectQuery(db, "SELECT id FROM tasks WHERE id = ?;");
+        selectQuery.bind(1, id);
+        if (selectQuery.executeStep()){
+            std::cout << "| New Title: ";
+            std::cin.ignore();
+            std::string newTitle;
+            std::getline(std::cin, newTitle);
+            SQLite::Statement updateQuery(db, "UPDATE tasks SET title = ? WHERE id = ?;");
+            updateQuery.bind(1, newTitle);
+            updateQuery.bind(2, id);
+            updateQuery.exec();
+            std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
+            std::cout << "| update completed :3" << std::endl;  
+            std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
             break;
+        }else {
+            std::cout << "id not found, check tasks list" << std::endl;
+            std::cout << "| Retry(R)/exit(q)" << std::endl;
+            char opt;
+            std::cin >> opt;
+            if(!(opt == 'r' || opt == 'R')) break;
+            displayTask();
         }
     }
-    if(!found){
-        std::cout << "id not found, check tasks list" << std::endl;
-        displayTask();
+}
+
+void updateStatus(int id){
+    auto& db = getDB();
+    while(true){
+        SQLite::Statement selectQuery(db, "SELECT id FROM tasks WHERE id = ?;");
+        selectQuery.bind(1, id);
+        if (selectQuery.executeStep()){
+            std::cout << "| New status: " << std::endl;
+            std::string newStatus = status();
+            SQLite::Statement updateQuery(db, "UPDATE tasks SET status = ? WHERE id = ?;");
+            updateQuery.bind(1, newStatus);
+            updateQuery.bind(2, id);
+            updateQuery.exec();
+            std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
+            std::cout << "| update completed :3" << std::endl;
+            std::cout << "| ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
+            break;
+        }else {
+            std::cout << "id not found, check tasks list" << std::endl;
+            std::cout << "| Retry(R)/exit(q)" << std::endl;
+            char opt;
+            std::cin >> opt;
+            if(!(opt == 'r' || opt == 'R')) break;
+            displayTask();
+        }
     }
 }
 
-void updateTitle(int& id){
-    update(id, 't');
-}
-
-void updateStatus(int& id){
-    update(id, 's');
-}
-
-void deleteTask(int& id){
+void deleteTask(int id){
     auto& db = getDB();
-    SQLite::Statement query(db, "SELECT id FROM tasks;");
-    bool found = false;
-    while (query.executeStep()){
-        if(query.getColumn(0).getInt() == id){
-            found = true;
-            std::cout << "| task found... " << std::endl;;
-            SQLite::Statement query(db, "DELETE FROM tasks WHERE id = ?;");
-            query.bind(1, id);
-            query.exec();
+    while(true){
+        SQLite::Statement query(db, "SELECT id FROM tasks WHERE id = ?;");
+        query.bind(1, id);
+        if(query.executeStep()){
+            std::cout << "| task found... " << std::endl;
+            SQLite::Statement deleteQuery(db, "DELETE FROM tasks WHERE id = ?;");
+            deleteQuery.bind(1, id);
+            deleteQuery.exec();
             std::cout << "| task deleted :3" << std::endl;
             break;
+        }else{
+            std::cout << "id not found, check list" << std::endl;
+            std::cout << "| Retry(R)/exit(q)" << std::endl;
+            char opt;
+            std::cin >> opt;
+            if(!(opt == 'r' || opt == 'R')) break;
+            displayTask();
         }
     }
-    if(!found)
-        std::cout << "id not found, check list" << std::endl;
 }

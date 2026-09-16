@@ -1,17 +1,85 @@
-# Compiled files
-*.o
-*.out
-todo
-*.exe
-
 # Data file (so your personal tasks don't get uploaded)
 TaskList.json
 
-# IDE / editor
+# =========================
+# Build
+# =========================
+
+build/
+cmake-build-*/
+
+
+# =========================
+# CMake generated files
+# =========================
+
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+Makefile
+
+
+# =========================
+# Compiled files
+# =========================
+
+*.exe
+*.out
+*.o
+*.obj
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+
+# =========================
+# SQLite
+# =========================
+
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+
+# =========================
+# VSCodium / VS Code
+# =========================
+
 .vscode/
-.idea/
+
+# Workspace files
+*.code-workspace
+
+
+# =========================
+# Debug / temporary files
+# =========================
+
+*.log
+*.tmp
+*.temp
 *.swp
+*.swo
 *~
 
-# Build folder (for later)
-build/
+
+# =========================
+# OS files
+# =========================
+
+# Linux
+.directory
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store

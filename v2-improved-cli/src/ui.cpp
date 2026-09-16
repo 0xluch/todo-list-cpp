@@ -14,27 +14,33 @@ void displayTask(){
     if (count == 0)
         std::cout << "| You have no tasks registered -_-" << std::endl;
     else{
-        SQLite::Statement queryf(db, "SELECT DISTINCT folder FROM tasks");
+        SQLite::Statement queryf(db, "SELECT DISTINCT folders.id, folders.folder_name FROM tasks JOIN folders ON tasks.folder_id = folders.id;");
         while(queryf.executeStep()){
-            std::string folder = queryf.getColumn(0).getString();
-            std::vector<std::string> folders;
-            folders.push_back(folder); 
+            std::string folder = queryf.getColumn(1).getString();
+            int folderID = queryf.getColumn(0).getInt();
             std::cout << "| #" << folder << ": " << std::endl;
-            SQLite::Statement query(db, "SELECT * FROM tasks WHERE folder = ?;");
-            query.bind(1, folder);
-            while(query.executeStep()){
-                int id = query.getColumn(0).getInt();
-                std::cout << "| Task id = " << id << ":" << std::endl;
-                std::string title = query.getColumn(1).getString();
-                std::string status = query.getColumn(2).getString();
-                std::cout << "|  Title : " << title
-                          << "   ---    " 
-                          << "Status: " << status << std::endl;
-                std::cout << "|" << std::endl;
-            }
+            displayFolderTasks(folderID);
             std::cout << "|─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─" << std::endl;
         }
     }
+    
+}
+
+void displayFolderTasks(int folderID){
+    auto& db = getDB();
+    SQLite::Statement query(db, "SELECT * FROM tasks WHERE folder_id = ?;");
+    query.bind(1, folderID);
+    while(query.executeStep()){
+        int id = query.getColumn(0).getInt();
+        std::cout << "| Task id = " << id << ":" << std::endl;
+        std::string title = query.getColumn(1).getString();
+        std::string status = query.getColumn(2).getString();
+        std::cout << "|  Title : " << title
+                  << "   ---    " 
+                  << "Status: " << status << std::endl;
+        std::cout << "|" << std::endl;
+    }
+
 }
 
 void displayFolder(){

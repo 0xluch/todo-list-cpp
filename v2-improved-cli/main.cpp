@@ -1,4 +1,3 @@
-#include"src/task.h"
 #include "src/taskops.h"
 #include "src/ui.h"
 #include "src/opendb.h"
@@ -8,7 +7,6 @@
 
 int main(){
     openDB();
-    openFDB();
 
     std::cout << "                                                  " << R"(    |\__/,|   (`\ )" << "\n" 
     << "                                                    _.|o o  |_   ) )" << std::endl;
@@ -17,7 +15,9 @@ int main(){
     int opr;
     while(true){
         std::cin >> opr;
-        if(opr == 1){
+        if(opr == 0)
+            break;
+        else if(opr == 1){
             displayTask();
         }else if(opr == 2){
             displayFolder();
@@ -48,8 +48,12 @@ int main(){
            updateFolderName();
         }else if(opr == 9){
            deleteFolder();
-        }else
-            break;
+        }else if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "| Invalid option, try again." << std::endl;
+            continue;
+        }
         showMenu();
     }
 }
